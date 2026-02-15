@@ -1,0 +1,2057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - SPU FYE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+    /* Global Styles - RED & WHITE theme */
+    :root {
+        /* Primary Colors - all red */
+        --primary-red: #b22222;      /* firebrick */
+        --primary-light-red: #dc143c; /* crimson */
+        --primary-dark-red: #8b0000;  /* darkred */
+        
+        /* Enhanced Gradients - red only */
+        --gradient-primary: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-light-red) 100%);
+        --gradient-secondary: linear-gradient(135deg, var(--primary-light-red) 0%, var(--primary-dark-red) 100%);
+        --gradient-soft: linear-gradient(135deg, rgba(178, 34, 34, 0.1) 0%, rgba(220, 20, 60, 0.1) 100%);
+        
+        /* Neutrals - clean whites and grays */
+        --black: #1A1A1A;
+        --dark-gray: #2D2D2D;
+        --medium-gray: #4A4A4A;
+        --light-gray: #F8F9FA;
+        --border-light: #E8ECEF;
+        --white: #FFFFFF;
+        
+        /* Text Colors (light mode) */
+        --text-primary: #1A1A1A;
+        --text-secondary: #2D2D2D;
+        --text-tertiary: #6c757d;
+        
+        /* Shadows */
+        --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+        --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
+        --shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.12);
+        --shadow-colored: 0 4px 20px rgba(178, 34, 34, 0.2);
+    }
+
+    /* Dark Mode overrides - but we keep red accents */
+    body.dark-mode {
+        background: var(--dark-gray);
+        --light-gray: #2D2D2D;
+        --white: #1A1A1A;
+        --text-primary: #FFFFFF;
+        --text-secondary: #E8ECEF;
+        --text-tertiary: #ADB5BD;
+        --border-light: #404040;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+        background: var(--light-gray);
+        color: var(--text-primary);
+        line-height: 1.6;
+        font-size: 16px;
+        overflow-x: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Dark Mode Styles */
+    body.dark-mode .sidebar,
+    body.dark-mode .top-nav,
+    body.dark-mode .settings-card,
+    body.dark-mode .contact-card,
+    body.dark-mode .notification-dropdown {
+        background: var(--black);
+        border-color: var(--border-light);
+    }
+
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--text-primary);
+        font-weight: 700;
+        margin-bottom: 0.75em;
+        letter-spacing: -0.025em;
+    }
+
+    /* Dashboard Layout */
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+        background: var(--light-gray);
+    }
+
+    /* Enhanced Sidebar */
+    .sidebar {
+        width: 280px;
+        background: var(--white);
+        box-shadow: var(--shadow-medium);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 100;
+        position: fixed;
+        height: 100vh;
+        border-right: 1px solid var(--border-light);
+    }
+
+    .sidebar.collapsed {
+        width: 80px;
+    }
+
+    .sidebar-header {
+        padding: 24px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 2px solid transparent;
+        background: var(--gradient-soft);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .sidebar-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+    }
+
+    .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        object-fit: cover;
+        flex-shrink: 0;
+        box-shadow: var(--shadow-light);
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .sidebar-header h3 {
+        color: var(--text-primary);
+        font-size: 20px;
+        font-weight: 800;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 0;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .sidebar.collapsed .sidebar-header h3 {
+        display: none;
+    }
+
+    .toggle-btn {
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+        padding: 8px;
+        border-radius: 8px;
+    }
+
+    .toggle-btn:hover {
+        color: var(--primary-red);
+        background: rgba(178, 34, 34, 0.1);
+    }
+
+    .sidebar-menu {
+        padding: 20px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        height: calc(100vh - 120px);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .menu-section {
+        margin-bottom: 24px;
+    }
+
+    .menu-section-title {
+        padding: 0 20px 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+    }
+
+    .sidebar.collapsed .menu-section-title {
+        display: none;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 14px 20px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        overflow: hidden;
+        position: relative;
+        margin: 0 12px;
+        border-radius: 12px;
+        font-weight: 500;
+    }
+
+    .menu-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        background: var(--gradient-primary);
+        transition: width 0.3s ease;
+        border-radius: 12px;
+        z-index: -1;
+    }
+
+    .menu-item:hover::before {
+        width: 100%;
+    }
+
+    .menu-item:hover {
+        color: var(--white);
+        transform: translateX(4px);
+        box-shadow: var(--shadow-colored);
+    }
+
+    .menu-item.active {
+        background: var(--gradient-primary);
+        color: var(--white);
+        box-shadow: var(--shadow-colored);
+    }
+
+    .menu-item i {
+        margin-right: 12px;
+        font-size: 18px;
+        width: 24px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar.collapsed .menu-item {
+        justify-content: center;
+        margin: 0 8px;
+    }
+
+    .sidebar.collapsed .menu-item span {
+        display: none;
+    }
+
+    .sidebar.collapsed .menu-item i {
+        margin-right: 0;
+        font-size: 20px;
+    }
+
+    /* Enhanced Main Content */
+    .main-content {
+        flex: 1;
+        margin-left: 280px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
+    }
+
+    .main-content.expanded {
+        margin-left: 80px;
+    }
+
+    /* Enhanced Top Navigation */
+    .top-nav {
+        background: var(--white);
+        padding: 20px 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow-light);
+        position: sticky;
+        top: 0;
+        z-index: 90;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .welcome-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .welcome-message h2 {
+        font-size: 24px;
+        color: var(--text-primary);
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .welcome-message .greeting-text {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+    }
+
+    /* Enhanced Dark mode toggle */
+    .dark-mode-toggle {
+        position: relative;
+        display: inline-block;
+        width: 56px;
+        height: 28px;
+    }
+
+    .dark-mode-toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .dark-mode-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--border-light);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 28px;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode-slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background: var(--white);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 50%;
+        box-shadow: var(--shadow-light);
+    }
+
+    input:checked + .dark-mode-slider {
+        background: var(--gradient-primary);
+    }
+
+    input:checked + .dark-mode-slider:before {
+        transform: translateX(28px);
+    }
+
+    /* Enhanced Notification Bell */
+    .notification-bell {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .notification-bell i {
+        font-size: 20px;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+    }
+
+    .notification-bell:hover i {
+        color: var(--primary-red);
+    }
+
+    .notification-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: var(--primary-red);
+        color: var(--white);
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+        display: none;
+    }
+
+    /* Enhanced Notification Dropdown */
+    .notification-dropdown {
+        position: absolute;
+        top: 60px;
+        right: 0;
+        width: 360px;
+        max-height: 500px;
+        overflow-y: auto;
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: var(--shadow-heavy);
+        z-index: 100;
+        transform: translateY(10px);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--border-light);
+    }
+
+    .notification-dropdown.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .notification-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--border-light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .notification-title {
+        font-weight: 700;
+        color: var(--text-primary);
+        font-size: 16px;
+    }
+
+    .mark-all-read {
+        background: none;
+        border: none;
+        color: var(--primary-red);
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .mark-all-read:hover {
+        background: rgba(178, 34, 34, 0.1);
+    }
+
+    .notification-list {
+        list-style: none;
+    }
+
+    .notification-item {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-light);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .notification-item:hover {
+        background-color: rgba(178, 34, 34, 0.05);
+    }
+
+    .notification-item.unread {
+        background-color: rgba(178, 34, 34, 0.1);
+    }
+
+    .notification-content {
+        color: var(--text-secondary);
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+
+    .notification-time {
+        font-size: 12px;
+        color: var(--text-tertiary);
+    }
+
+    .no-notifications {
+        padding: 20px;
+        text-align: center;
+        color: var(--text-tertiary);
+        font-size: 14px;
+    }
+
+    /* Enhanced User Profile Button */
+    .user-profile-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        padding: 8px 16px;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        background: var(--gradient-soft);
+    }
+
+    .user-profile-btn:hover {
+        background: rgba(178, 34, 34, 0.1);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-light);
+    }
+
+    .user-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow: var(--shadow-light);
+        position: relative;
+    }
+
+    .user-avatar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 12px;
+        border: 2px solid rgba(178, 34, 34, 0.2);
+    }
+
+    .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 14px;
+    }
+
+    /* Enhanced Content Area */
+    .content-area {
+        padding: 32px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .section-header h2 {
+        font-size: 28px;
+        color: var(--text-primary);
+        margin: 0;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Enhanced Settings Card */
+    .settings-card {
+        background: var(--white);
+        border-radius: 20px;
+        box-shadow: var(--shadow-medium);
+        padding: 32px;
+        margin-bottom: 32px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--border-light);
+    }
+
+    .settings-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+    }
+
+    .settings-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 32px;
+        gap: 24px;
+    }
+
+    .settings-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 20px;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+        box-shadow: var(--shadow-heavy);
+    }
+
+    .settings-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar-upload {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        background: var(--gradient-primary);
+        color: var(--white);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: var(--shadow-medium);
+        transition: all 0.3s ease;
+    }
+
+    .avatar-upload:hover {
+        transform: scale(1.1);
+    }
+
+    .avatar-upload input {
+        display: none;
+    }
+
+    .settings-info h3 {
+        font-size: 24px;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+
+    .settings-info p {
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+        font-size: 16px;
+    }
+
+    /* Form Styles */
+    .settings-form {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+        margin-top: 32px;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-primary);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        font-size: 15px;
+        transition: 
+            border-color 0.3s ease,
+            box-shadow 0.3s ease;
+        background: var(--white);
+        color: var(--text-primary);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: var(--primary-red);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(178, 34, 34, 0.1);
+    }
+
+    body.dark-mode .form-group input,
+    body.dark-mode .form-group select,
+    body.dark-mode .form-group textarea {
+        background: var(--black);
+        border-color: var(--border-light);
+        color: var(--text-primary);
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .toggle-input {
+        display: none;
+    }
+
+    .toggle-label {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 26px;
+        background: var(--border-light);
+        border-radius: 26px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .toggle-label::after {
+        content: '';
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--white);
+        top: 2px;
+        left: 2px;
+        transition: transform 0.3s ease;
+        box-shadow: var(--shadow-light);
+    }
+
+    .toggle-input:checked + .toggle-label {
+        background: var(--gradient-primary);
+    }
+
+    .toggle-input:checked + .toggle-label::after {
+        transform: translateX(22px);
+    }
+
+    .toggle-text {
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+        margin-top: 32px;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn:active {
+        transform: scale(0.98);
+    }
+
+    .btn-primary {
+        background: var(--gradient-primary);
+        color: var(--white);
+        box-shadow: var(--shadow-light);
+    }
+
+    .btn-primary:hover {
+        box-shadow: var(--shadow-colored);
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background: var(--border-light);
+        color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+        background: var(--medium-gray);
+        color: var(--white);
+    }
+
+    /* Emergency Contacts */
+    .emergency-contacts {
+        margin-top: 48px;
+    }
+
+    .contacts-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .contacts-header h3 {
+        font-size: 20px;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .add-contact-btn {
+        background: var(--gradient-primary);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        padding: 10px 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .add-contact-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-colored);
+    }
+
+    .contacts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
+    }
+
+    .contact-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: var(--shadow-light);
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+    }
+
+    .contact-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-medium);
+    }
+
+    .contact-card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .contact-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--gradient-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 16px;
+        color: var(--primary-red);
+        font-size: 18px;
+    }
+
+    .contact-name {
+        font-weight: 600;
+        font-size: 16px;
+        color: var(--text-primary);
+    }
+
+    .contact-relation {
+        font-size: 14px;
+        color: var(--text-tertiary);
+    }
+
+    .contact-details {
+        margin-top: 16px;
+    }
+
+    .contact-detail {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+
+    .contact-detail i {
+        margin-right: 12px;
+        width: 16px;
+        color: var(--text-tertiary);
+        font-size: 14px;
+    }
+
+    .contact-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .contact-action-btn {
+        background: none;
+        border: none;
+        color: var(--text-tertiary);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 16px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .contact-action-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .contact-action-btn.edit-btn:hover {
+        color: var(--primary-red);
+    }
+
+    .contact-action-btn.delete-btn:hover {
+        color: #b22222;
+    }
+
+    /* Delete Account Section */
+    .delete-account {
+        margin-top: 48px;
+        padding-top: 32px;
+        border-top: 2px solid var(--border-light);
+    }
+
+    .delete-account h3 {
+        color: var(--primary-red);
+        margin-bottom: 16px;
+        font-size: 20px;
+    }
+
+    .delete-account p {
+        margin-bottom: 24px;
+        color: var(--text-tertiary);
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .delete-account-btn {
+        background-color: var(--primary-red);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .delete-account-btn:hover {
+        background-color: var(--primary-dark-red);
+        transform: translateY(-2px);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 24px;
+        backdrop-filter: blur(4px);
+    }
+
+    .modal-content {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 32px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: var(--shadow-heavy);
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: modalFadeIn 0.3s ease forwards;
+    }
+
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modal-content h3 {
+        font-size: 20px;
+        margin-bottom: 16px;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .modal-content p {
+        font-size: 15px;
+        margin-bottom: 24px;
+        line-height: 1.6;
+        color: var(--text-secondary);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .content-area {
+            padding: 24px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .sidebar {
+            width: 80px;
+        }
+        
+        .sidebar-header h3,
+        .menu-section-title,
+        .menu-item span {
+            display: none;
+        }
+        
+        .menu-item {
+            justify-content: center;
+            margin: 0 8px;
+        }
+        
+        .menu-item i {
+            margin-right: 0;
+            font-size: 20px;
+        }
+        
+        .main-content {
+            margin-left: 80px;
+        }
+        
+        .settings-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .contacts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .top-nav {
+            padding: 16px 20px;
+        }
+        
+        .welcome-message h2 {
+            font-size: 20px;
+        }
+        
+        .nav-actions {
+            gap: 16px;
+        }
+        
+        .content-area {
+            padding: 20px 16px;
+        }
+        
+        .notification-dropdown {
+            width: calc(100vw - 32px);
+            right: -16px;
+        }
+
+        .settings-form {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .contacts-header {
+            flex-direction: column;
+            gap: 16px;
+            align-items: stretch;
+        }
+    }
+
+    /* Accessibility and Focus States */
+    :focus-visible {
+        outline: 2px solid var(--primary-red);
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
+
+    /* Text Selection */
+    ::selection {
+        background: var(--primary-red);
+        color: var(--white);
+    }
+
+    /* Enhanced Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--border-light);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--gradient-primary);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-dark-red);
+    }
+</style>
+</head>
+<body>
+ <div class="dashboard-container">
+        <!-- Enhanced Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <div class="logo">SPU</div>
+                    <h3>SPU FYE</h3>
+                </div>
+                <button class="toggle-btn" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <!-- Main Section -->
+                <div class="menu-section">
+                    <div class="menu-section-title">Main</div>
+                    <a href="home.html" class="menu-item">
+                        <i class="fas fa-home"></i>
+                        <span>Chatting</span>
+                    </a>
+                  <a href="dashboard.html" class="menu-item">
+                        <i class="fas fa-user-circle"></i>
+                        <span>My Profile</span>
+                    </a>
+              
+                </div>
+                
+                <!-- Settings Section -->
+                <div class="menu-section">
+                    <div class="menu-section-title">Settings</div>
+                    <a href="settings.html" class="menu-item active">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="index.html" class="menu-item">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Enhanced Top Navigation -->
+            <div class="top-nav">
+                <div class="welcome-section">
+                    <div class="welcome-message">
+                        <h2>Welcome back, <span class="greeting-text" id="userFullName">Loading...</span></h2>
+                    </div>
+                </div>
+                <div class="nav-actions">
+                    <div class="dark-mode-toggle">
+                        <input type="checkbox" id="darkModeToggle">
+                        <label for="darkModeToggle" class="dark-mode-slider"></label>
+                    </div>
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count">0</span>
+                        <div class="notification-dropdown">
+                            <div class="notification-header">
+                                <span class="notification-title">Notifications</span>
+                                <button class="mark-all-read">Mark all as read</button>
+                            </div>
+                            <ul class="notification-list">
+                                <li class="no-notifications">No new notifications</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="user-profile-btn">
+                        <div class="user-avatar">
+                            <img src="https://via.placeholder.com/150" alt="User Avatar" id="userAvatar">
+                        </div>
+                        <span class="user-name" id="userName">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Content Area -->
+            <div class="content-area">
+                <div class="section-header">
+                    <h2>Account Settings</h2>
+                </div>
+
+                <!-- Enhanced Settings Card -->
+                <div class="settings-card">
+                    <div class="settings-header">
+                        <div class="settings-avatar">
+                            <img src="https://via.placeholder.com/150" alt="Profile Picture" id="profilePicture">
+                            <label class="avatar-upload" for="avatarInput">
+                                <i class="fas fa-camera"></i>
+                                <input type="file" id="avatarInput" accept="image/*">
+                            </label>
+                        </div>
+                        <div class="settings-info">
+                            <h3 id="profileName">Loading...</h3>
+                            <p id="profileEmail">Loading...</p>
+                        </div>
+                    </div>
+
+                    <form class="settings-form" id="settingsForm">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" id="address">
+                        </div>
+                        <div class="form-group">
+                            <label for="anonymousMode">Anonymous Mode</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="anonymousMode" class="toggle-input">
+                                <label for="anonymousMode" class="toggle-label"></label>
+                                <span class="toggle-text">Hide my identity in public posts</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Change Password</label>
+                            <input type="password" id="password" placeholder="Enter new password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="cancelChanges">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+
+                 
+
+                    <!-- Delete Account Section -->
+                    <div class="delete-account">
+                        <h3>Delete Account</h3>
+                        <p>Once you delete your account, there is no going back. Please be certain.</p>
+                        <button class="delete-account-btn" id="deleteAccountBtn">
+                            <i class="fas fa-trash"></i> Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Contact Modal -->
+    <div class="modal-overlay" id="contactModal" style="display: none;">
+        <div class="modal-content">
+            <h3>Add Emergency Contact</h3>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="contactName">Full Name</label>
+                    <input type="text" id="contactName" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactRelation">Relationship</label>
+                    <input type="text" id="contactRelation" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactPhone">Phone Number</label>
+                    <input type="tel" id="contactPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactEmail">Email</label>
+                    <input type="email" id="contactEmail">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelContactBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Contact</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div class="modal-overlay" id="deleteAccountModal" style="display: none;">
+        <div class="modal-content">
+            <h3>Delete Your Account</h3>
+            <p>We're sorry to see you go. Please let us know why you're deleting your account:</p>
+            <textarea id="deleteReason" placeholder="Reason for deleting account..." class="form-group" style="width: 100%; min-height: 100px;"></textarea>
+            <p>For security, please enter your password to confirm:</p>
+            <input type="password" id="passwordConfirm" placeholder="Enter your password" class="form-group" style="width: 100%;">
+            <div class="form-actions">
+                <button class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                <button class="btn btn-primary" id="confirmDeleteBtn">Delete Account</button>
+            </div>
+        </div>
+    </div>
+
+<script type="module">
+    // Import Firebase functions
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { 
+        getAuth, 
+        onAuthStateChanged,
+        updateProfile,
+        updateEmail,
+        updatePassword,
+        EmailAuthProvider,
+        reauthenticateWithCredential,
+        deleteUser,
+        signOut
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { 
+        getDatabase, 
+        ref, 
+        get, 
+        set, 
+        update,
+        onValue,
+        push,
+        remove
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+    // Firebase config
+  const firebaseConfig = {
+  apiKey: "AIzaSyDVVNN0hHrR90FiEaPoJt8H4MVR8KBkWZw",
+  authDomain: "community-forum-75dc6.firebaseapp.com",
+  databaseURL: "https://community-forum-75dc6-default-rtdb.firebaseio.com",
+  projectId: "community-forum-75dc6",
+  storageBucket: "community-forum-75dc6.appspot.com",
+  messagingSenderId: "524182558257",
+  appId: "1:524182558257:web:3612faacdd8fbcb288a710",
+  measurementId: "G-JGMRZDKTG2"
+};
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+    const storage = getStorage(app);
+
+    // DOM Elements
+    const toggleSidebarBtn = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const userFullName = document.getElementById('userFullName');
+    const userName = document.getElementById('userName');
+    const profileName = document.getElementById('profileName');
+    const profileEmail = document.getElementById('profileEmail');
+    const profilePicture = document.getElementById('profilePicture');
+    const userAvatar = document.getElementById('userAvatar');
+    const avatarInput = document.getElementById('avatarInput');
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const settingsForm = document.getElementById('settingsForm');
+    const fullNameInput = document.getElementById('fullName');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phone');
+    const addressInput = document.getElementById('address');
+    const anonymousModeInput = document.getElementById('anonymousMode');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const cancelChangesBtn = document.getElementById('cancelChanges');
+    const addContactBtn = document.getElementById('addContactBtn');
+    const contactsGrid = document.getElementById('contactsGrid');
+    const contactModal = document.getElementById('contactModal');
+    const contactForm = document.getElementById('contactForm');
+    const cancelContactBtn = document.getElementById('cancelContactBtn');
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+    const deleteAccountModal = document.getElementById('deleteAccountModal');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const deleteReason = document.getElementById('deleteReason');
+    const passwordConfirm = document.getElementById('passwordConfirm');
+
+    // State variables
+    let currentUser = null;
+    let userData = {};
+    let originalEmail = '';
+
+    // Initialize the settings page
+    function initSettings() {
+        setupEventListeners();
+        checkAuthState();
+        initDarkMode();
+    }
+
+    // Check authentication state
+    function checkAuthState() {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadUserData(user.uid);
+                setupNotifications(user.uid);
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    }
+
+    // Load user data from Firebase
+    function loadUserData(userId) {
+        const userRef = ref(database, `users/${userId}`);
+        
+        onValue(userRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                userData = data;
+                originalEmail = data.email || '';
+                updateUI(data);
+                
+                // Apply dark mode if enabled
+                if (data.darkMode) {
+                    document.body.classList.add('dark-mode');
+                    darkModeToggle.checked = true;
+                }
+            } else {
+                initializeUserData(userId);
+            }
+        });
+    }
+
+    // Initialize dark mode from user preference
+    function initDarkMode() {
+        const userId = auth.currentUser?.uid;
+        if (!userId) return;
+
+        const darkModeRef = ref(database, `users/${userId}/darkMode`);
+        
+        onValue(darkModeRef, (snapshot) => {
+            const darkModeEnabled = snapshot.val() || false;
+            darkModeToggle.checked = darkModeEnabled;
+            document.body.classList.toggle('dark-mode', darkModeEnabled);
+        });
+    }
+
+    // Toggle dark mode
+    function toggleDarkMode() {
+        const userId = auth.currentUser?.uid;
+        if (!userId) return;
+
+        const darkModeEnabled = darkModeToggle.checked;
+        document.body.classList.toggle('dark-mode', darkModeEnabled);
+        
+        // Save preference to database
+        set(ref(database, `users/${userId}/darkMode`), darkModeEnabled)
+            .catch(error => {
+                console.error("Error saving dark mode preference:", error);
+                // Revert UI if save fails
+                darkModeToggle.checked = !darkModeEnabled;
+                document.body.classList.toggle('dark-mode', !darkModeEnabled);
+            });
+    }
+
+    // Update UI with user data
+    function updateUI(data) {
+        const isAnonymous = data.anonymousMode || false;
+        
+        // Handle name display
+        const displayName = isAnonymous ? 'Anonymous' : (data.name || 'User');
+        const shortName = isAnonymous ? 'A' : displayName.split(' ')[0];
+        
+        // Update all name displays
+        userFullName.textContent = displayName;
+        userName.textContent = shortName;
+        profileName.textContent = displayName;
+        profileEmail.textContent = data.email || 'No email provided';
+        
+        // Handle avatar (force generic avatar in anonymous mode)
+        if (data.photoURL && !isAnonymous) {
+            profilePicture.src = data.photoURL;
+            userAvatar.src = data.photoURL;
+        } else {
+            const initial = isAnonymous ? 'A' : (data.name ? data.name.charAt(0).toUpperCase() : 'U');
+            const placeholder = `https://ui-avatars.com/api/?name=${initial}&background=b22222&color=fff`;
+            profilePicture.src = placeholder;
+            userAvatar.src = placeholder;
+        }
+        
+        // Update form fields
+        fullNameInput.value = data.name || '';
+        emailInput.value = data.email || '';
+        phoneInput.value = data.phone || '';
+        addressInput.value = data.address || '';
+        anonymousModeInput.checked = isAnonymous;
+
+        // Load emergency contacts
+        loadEmergencyContacts(currentUser.uid);
+    }
+
+    // Initialize user data if not exists
+    function initializeUserData(userId) {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const userData = {
+            name: user.displayName || '',
+            email: user.email || '',
+            phone: '',
+            address: '',
+            anonymousMode: false,
+            darkMode: false,
+            createdAt: new Date().toISOString()
+        };
+
+        set(ref(database, `users/${userId}`), userData)
+            .catch(error => console.error("Error initializing user data:", error));
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+        // Sidebar toggle
+        toggleSidebarBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        });
+
+        // Dark mode toggle
+        darkModeToggle.addEventListener('change', toggleDarkMode);
+
+        // Profile picture upload
+        avatarInput.addEventListener('change', handleProfilePictureUpload);
+
+        // Form submission
+        settingsForm.addEventListener('submit', handleSettingsSubmit);
+
+        // Cancel changes button
+        cancelChangesBtn.addEventListener('click', resetForm);
+
+        // Emergency contacts
+        addContactBtn.addEventListener('click', () => {
+            contactModal.style.display = 'flex';
+        });
+
+        cancelContactBtn.addEventListener('click', () => {
+            contactModal.style.display = 'none';
+            contactForm.reset();
+        });
+
+        contactForm.addEventListener('submit', handleAddContact);
+
+        // Delete account
+        deleteAccountBtn.addEventListener('click', () => {
+            deleteAccountModal.style.display = 'flex';
+        });
+
+        cancelDeleteBtn.addEventListener('click', () => {
+            deleteAccountModal.style.display = 'none';
+            deleteReason.value = '';
+            passwordConfirm.value = '';
+        });
+
+        confirmDeleteBtn.addEventListener('click', handleDeleteAccount);
+
+        // Notification system
+        setupNotificationToggle();
+    }
+
+    // Setup notification system
+    function setupNotificationToggle() {
+        const notificationBell = document.querySelector('.notification-bell');
+        const notificationDropdown = document.querySelector('.notification-dropdown');
+        const markAllReadBtn = document.querySelector('.mark-all-read');
+        
+        // Toggle dropdown
+        notificationBell.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notificationDropdown.classList.toggle('active');
+        });
+        
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!notificationBell.contains(e.target)) {
+                notificationDropdown.classList.remove('active');
+            }
+        });
+        
+        // Mark all as read
+        markAllReadBtn.addEventListener('click', () => markAllNotificationsAsRead(currentUser.uid));
+    }
+
+    // Handle profile picture upload
+    async function handleProfilePictureUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            const userId = currentUser.uid;
+            const storageReference = storageRef(storage, `profile_pictures/${userId}`);
+            const snapshot = await uploadBytes(storageReference, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+
+            // Update profile picture in database
+            await update(ref(database, `users/${userId}`), {
+                photoURL: downloadURL
+            });
+
+            // Update UI only if not in anonymous mode
+            if (!userData.anonymousMode) {
+                profilePicture.src = downloadURL;
+                userAvatar.src = downloadURL;
+            }
+
+            // Update auth profile
+            await updateProfile(currentUser, {
+                photoURL: downloadURL
+            });
+
+        } catch (error) {
+            console.error("Error uploading profile picture:", error);
+            alert("Failed to upload profile picture. Please try again.");
+        }
+    }
+
+    // Handle settings form submission
+    async function handleSettingsSubmit(e) {
+        e.preventDefault();
+        
+        try {
+            const userId = currentUser.uid;
+            const updates = {};
+            const isAnonymous = anonymousModeInput.checked;
+            const newName = fullNameInput.value.trim();
+            const newEmail = emailInput.value.trim();
+            const newPhone = phoneInput.value.trim();
+            const newAddress = addressInput.value.trim();
+            const newPassword = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            // Validate passwords if changed
+            if (newPassword || confirmPassword) {
+                if (newPassword !== confirmPassword) {
+                    alert("Passwords don't match!");
+                    return;
+                }
+                if (newPassword.length < 6) {
+                    alert("Password must be at least 6 characters long");
+                    return;
+                }
+            }
+
+            // Prepare updates
+            if (newName !== userData.name) {
+                updates.name = newName;
+            }
+            if (newEmail !== originalEmail) {
+                updates.email = newEmail;
+            }
+            if (newPhone !== userData.phone) {
+                updates.phone = newPhone;
+            }
+            if (newAddress !== userData.address) {
+                updates.address = newAddress;
+            }
+            if (isAnonymous !== userData.anonymousMode) {
+                updates.anonymousMode = isAnonymous;
+            }
+
+            // Update database
+            if (Object.keys(updates).length > 0) {
+                await update(ref(database, `users/${userId}`), updates);
+            }
+
+            // Update email if changed
+            if (newEmail !== originalEmail) {
+                await updateEmail(currentUser, newEmail);
+                originalEmail = newEmail;
+            }
+
+            // Update password if changed
+            if (newPassword) {
+                await updatePassword(currentUser, newPassword);
+                passwordInput.value = '';
+                confirmPasswordInput.value = '';
+            }
+
+            // Update display name if changed
+            if (newName !== userData.name) {
+                await updateProfile(currentUser, {
+                    displayName: newName
+                });
+            }
+
+            alert("Settings saved successfully!");
+            
+        } catch (error) {
+            console.error("Error saving settings:", error);
+            
+            if (error.code === 'auth/requires-recent-login') {
+                alert("For security, please re-authenticate to update your email or password.");
+            } else {
+                alert("Failed to save settings. Please try again.");
+            }
+        }
+    }
+
+    // Reset form to original values
+    function resetForm() {
+        fullNameInput.value = userData.name || '';
+        emailInput.value = originalEmail || '';
+        phoneInput.value = userData.phone || '';
+        addressInput.value = userData.address || '';
+        anonymousModeInput.checked = userData.anonymousMode || false;
+        passwordInput.value = '';
+        confirmPasswordInput.value = '';
+    }
+
+    // Load emergency contacts
+    function loadEmergencyContacts(userId) {
+        const contactsRef = ref(database, `users/${userId}/emergencyContacts`);
+        
+        onValue(contactsRef, (snapshot) => {
+            contactsGrid.innerHTML = '';
+            
+            const contacts = snapshot.val() || {};
+            if (Object.keys(contacts).length === 0) {
+                contactsGrid.innerHTML = '<p style="color: var(--text-tertiary); text-align: center;">No emergency contacts added yet.</p>';
+                return;
+            }
+            
+            Object.entries(contacts).forEach(([contactId, contact]) => {
+                const contactCard = createContactCard(contactId, contact);
+                contactsGrid.appendChild(contactCard);
+            });
+        });
+    }
+
+    // Create contact card element
+    function createContactCard(contactId, contact) {
+        const card = document.createElement('div');
+        card.className = 'contact-card';
+        
+        card.innerHTML = `
+            <div class="contact-card-header">
+                <div class="contact-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <div class="contact-name">${contact.name}</div>
+                    <div class="contact-relation">${contact.relation}</div>
+                </div>
+            </div>
+            <div class="contact-details">
+                <div class="contact-detail">
+                    <i class="fas fa-phone"></i>
+                    <span>${contact.phone}</span>
+                </div>
+                ${contact.email ? `
+                <div class="contact-detail">
+                    <i class="fas fa-envelope"></i>
+                    <span>${contact.email}</span>
+                </div>
+                ` : ''}
+            </div>
+            <div class="contact-actions">
+                <button class="contact-action-btn edit-btn" data-id="${contactId}">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="contact-action-btn delete-btn" data-id="${contactId}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        // Add event listeners to action buttons
+        card.querySelector('.edit-btn').addEventListener('click', () => editContact(contactId, contact));
+        card.querySelector('.delete-btn').addEventListener('click', () => deleteContact(contactId));
+        
+        return card;
+    }
+
+    // Handle adding new emergency contact
+    async function handleAddContact(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('contactName').value.trim();
+        const relation = document.getElementById('contactRelation').value.trim();
+        const phone = document.getElementById('contactPhone').value.trim();
+        const email = document.getElementById('contactEmail').value.trim();
+        
+        if (!name || !relation || !phone) {
+            alert("Please fill in all required fields (Name, Relationship, Phone)");
+            return;
+        }
+        
+        try {
+            const userId = currentUser.uid;
+            const contactsRef = ref(database, `users/${userId}/emergencyContacts`);
+            const newContactRef = push(contactsRef);
+            
+            await set(newContactRef, {
+                name,
+                relation,
+                phone,
+                email: email || null
+            });
+            
+            contactModal.style.display = 'none';
+            contactForm.reset();
+            
+        } catch (error) {
+            console.error("Error adding contact:", error);
+            alert("Failed to add contact. Please try again.");
+        }
+    }
+
+    // Edit existing contact
+    function editContact(contactId, contact) {
+        document.getElementById('contactName').value = contact.name;
+        document.getElementById('contactRelation').value = contact.relation;
+        document.getElementById('contactPhone').value = contact.phone;
+        document.getElementById('contactEmail').value = contact.email || '';
+        
+        // Change form to update mode
+        contactForm.dataset.mode = 'edit';
+        contactForm.dataset.contactId = contactId;
+        contactModal.style.display = 'flex';
+        
+        // Update submit button text
+        contactForm.querySelector('button[type="submit"]').textContent = 'Update Contact';
+    }
+
+    // Delete contact
+    async function deleteContact(contactId) {
+        if (!confirm("Are you sure you want to delete this emergency contact?")) {
+            return;
+        }
+        
+        try {
+            const userId = currentUser.uid;
+            const contactRef = ref(database, `users/${userId}/emergencyContacts/${contactId}`);
+            await remove(contactRef);
+            
+        } catch (error) {
+            console.error("Error deleting contact:", error);
+            alert("Failed to delete contact. Please try again.");
+        }
+    }
+
+    // Handle account deletion
+    async function handleDeleteAccount() {
+        const reason = deleteReason.value.trim();
+        const password = passwordConfirm.value;
+        
+        if (!password) {
+            alert("Please enter your password to confirm account deletion");
+            return;
+        }
+        
+        try {
+            // Reauthenticate user
+            const credential = EmailAuthProvider.credential(
+                currentUser.email, 
+                password
+            );
+            
+            await reauthenticateWithCredential(currentUser, credential);
+            
+            // Save deletion reason if provided
+            if (reason) {
+                const deletionRef = ref(database, `deletedAccounts/${currentUser.uid}`);
+                await set(deletionRef, {
+                    reason,
+                    deletedAt: new Date().toISOString()
+                });
+            }
+            
+            // Delete user from Firebase Auth
+            await deleteUser(currentUser);
+            
+            // Redirect to login page
+            await signOut(auth);
+            window.location.href = 'login.html';
+            
+        } catch (error) {
+            console.error("Error deleting account:", error);
+            
+            if (error.code === 'auth/wrong-password') {
+                alert("Incorrect password. Please try again.");
+            } else {
+                alert("Failed to delete account. Please try again.");
+            }
+        }
+    }
+
+    // Setup notifications
+    function setupNotifications(userId) {
+        const notificationRef = ref(database, `users/${userId}/notifications`);
+        
+        onValue(notificationRef, (snapshot) => {
+            const notifications = snapshot.val() || {};
+            const unreadCount = Object.values(notifications).filter(n => !n.read).length;
+            
+            // Update notification count
+            const countElement = document.querySelector('.notification-count');
+            if (unreadCount > 0) {
+                countElement.textContent = unreadCount;
+                countElement.style.display = 'flex';
+            } else {
+                countElement.style.display = 'none';
+            }
+            
+            // Update notification dropdown
+            updateNotificationDropdown(notifications);
+        });
+    }
+
+    // Update notification dropdown
+    function updateNotificationDropdown(notifications) {
+        const notificationList = document.querySelector('.notification-list');
+        notificationList.innerHTML = '';
+        
+        if (Object.keys(notifications).length === 0) {
+            notificationList.innerHTML = '<li class="no-notifications">No new notifications</li>';
+            return;
+        }
+        
+        // Sort notifications by timestamp (newest first)
+        const sortedNotifications = Object.entries(notifications)
+            .sort(([,a], [,b]) => b.timestamp - a.timestamp);
+        
+        sortedNotifications.forEach(([notificationId, notification]) => {
+            const notificationItem = document.createElement('li');
+            notificationItem.className = `notification-item ${notification.read ? '' : 'unread'}`;
+            notificationItem.innerHTML = `
+                <div class="notification-content">${notification.message}</div>
+                <div class="notification-time">${formatNotificationTime(notification.timestamp)}</div>
+            `;
+            
+            notificationItem.addEventListener('click', () => {
+                markNotificationAsRead(notificationId);
+            });
+            
+            notificationList.appendChild(notificationItem);
+        });
+    }
+
+    // Format notification timestamp
+    function formatNotificationTime(timestamp) {
+        const now = Date.now();
+        const diff = now - timestamp;
+        const minutes = Math.floor(diff / (1000 * 60));
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        
+        if (minutes < 1) return "Just now";
+        if (minutes < 60) return `${minutes} min ago`;
+        if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+        return `${days} day${days !== 1 ? 's' : ''} ago`;
+    }
+
+    // Mark notification as read
+    async function markNotificationAsRead(notificationId) {
+        try {
+            const userId = currentUser.uid;
+            await update(ref(database, `users/${userId}/notifications/${notificationId}`), {
+                read: true
+            });
+        } catch (error) {
+            console.error("Error marking notification as read:", error);
+        }
+    }
+
+    // Mark all notifications as read
+    async function markAllNotificationsAsRead(userId) {
+        try {
+            const notificationsRef = ref(database, `users/${userId}/notifications`);
+            const snapshot = await get(notificationsRef);
+            
+            if (snapshot.exists()) {
+                const updates = {};
+                Object.keys(snapshot.val()).forEach(notificationId => {
+                    updates[`${notificationId}/read`] = true;
+                });
+                
+                await update(notificationsRef, updates);
+            }
+        } catch (error) {
+            console.error("Error marking all notifications as read:", error);
+        }
+    }
+
+    // Initialize the settings page when DOM is loaded
+    document.addEventListener('DOMContentLoaded', initSettings);
+</script>
+</body>
+</html>

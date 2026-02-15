@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login/Register - spu first year experiences</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* --- Your existing CSS (red/white colours updated) --- */
+    :root {
+      --orange: #cfa109;     /* kept but not used; main accent is red now */
+      --dark-orange: #cfa109;
+      --purple: #b22222;      /* changed to firebrick red */
+      --light-purple: #dc143c; /* crimson red for gradients/lighter red */
+      --dark-gray: #333333;
+      --medium-gray: #666666;
+      --light-gray: #E5E5E5;
+      --white: #FFFFFF;
+    }
+    body { background: var(--light-gray); display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; font-family:sans-serif; }
+    .auth-container { display:flex; flex-direction:column; background:#fff; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-width:900px; width:100%; overflow:hidden; }
+    .auth-image { height:160px; background:url('https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=1000&q=80'); background-size:cover; }
+    .auth-content-container { padding:24px; flex:1; }
+    .auth-tab { flex:1; padding:12px; text-align:center; cursor:pointer; font-weight:600; color:var(--medium-gray); }
+    .auth-tab.active { color:var(--purple); border-bottom:3px solid var(--purple); } /* red underline */
+    .auth-form { display:none; }
+    .auth-form.active { display:block; }
+    .form-group { margin-bottom:16px; }
+    .form-group input, .form-group select { width:100%; padding:12px; border:1px solid var(--light-gray); border-radius:6px; box-sizing:border-box; }
+    .submit-btn { width:100%; padding:14px; background:linear-gradient(90deg, var(--purple), var(--light-purple)); color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:600; }
+    .submit-btn:hover { filter:brightness(0.95); }
+    .error-message, .success-message { padding:10px; border-radius:6px; margin-bottom:10px; font-size:14px; display:none; }
+    .error-message { background:#f8d7da; color:#721c24; }
+    .success-message { background:#d4edda; color:#155724; }
+    /* additional red/white touches */
+    .auth-header { display:flex; border-bottom:1px solid #eee; }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-image"></div>
+    <div class="auth-content-container">
+      <div class="auth-header">
+        <div class="auth-tab active" data-tab="login">Login</div>
+        <div class="auth-tab" data-tab="register">Register</div>
+      </div>
+
+      <div class="auth-content">
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="auth-form active">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="loginEmail" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" required />
+          </div>
+          <button type="submit" class="submit-btn">Login</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="auth-form">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="registerName" required />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="registerEmail" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="registerPassword" required minlength="6" />
+          </div>
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="registerConfirmPassword" required minlength="6" />
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="registerPhone" />
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" id="registerAddress" />
+          </div>
+          <div class="form-group">
+            <label>Account Type</label>
+            <select id="registerRole" required>
+              <option value="community">Community Member</option>
+              <option value="admin">Admin (Gov Official)</option>
+            </select>
+          </div>
+          <button type="submit" class="submit-btn">Register</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // Firebase config
+  const firebaseConfig = {
+  apiKey: "AIzaSyDVVNN0hHrR90FiEaPoJt8H4MVR8KBkWZw",
+  authDomain: "community-forum-75dc6.firebaseapp.com",
+  databaseURL: "https://community-forum-75dc6-default-rtdb.firebaseio.com",
+  projectId: "community-forum-75dc6",
+  storageBucket: "community-forum-75dc6.appspot.com",
+  messagingSenderId: "524182558257",
+  appId: "1:524182558257:web:3612faacdd8fbcb288a710",
+  measurementId: "G-JGMRZDKTG2"
+};
+
+
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    // Elements
+    const tabs = document.querySelectorAll('.auth-tab');
+    const forms = document.querySelectorAll('.auth-form');
+    const errorBox = document.getElementById("errorMessage");
+    const successBox = document.getElementById("successMessage");
+
+    function showError(msg) {
+      errorBox.textContent = msg;
+      errorBox.style.display = "block";
+      successBox.style.display = "none";
+    }
+    function showSuccess(msg) {
+      successBox.textContent = msg;
+      successBox.style.display = "block";
+      errorBox.style.display = "none";
+    }
+
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(t => t.classList.remove("active"));
+        forms.forEach(f => f.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.tab + "Form").classList.add("active");
+      });
+    });
+
+    // Register
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("registerName").value;
+      const email = document.getElementById("registerEmail").value;
+      const password = document.getElementById("registerPassword").value;
+      const confirmPassword = document.getElementById("registerConfirmPassword").value;
+      const phone = document.getElementById("registerPhone").value;
+      const address = document.getElementById("registerAddress").value;
+      const role = document.getElementById("registerRole").value;
+
+      if (password !== confirmPassword) {
+        showError("Passwords do not match.");
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        await sendEmailVerification(user);
+
+        await set(ref(database, "users/" + user.uid), {
+          name, email, phone, address, role,
+          emailVerified: false,
+          createdAt: new Date().toISOString()
+        });
+
+        showSuccess("Account created! Please verify your email before logging in.");
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+
+    // Login
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        if (!user.emailVerified) {
+          showError("Please verify your email before logging in.");
+          return;
+        }
+
+        const dbRef = ref(database);
+        const snapshot = await get(child(dbRef, "users/" + user.uid));
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          localStorage.setItem("user", JSON.stringify(userData));
+          showSuccess("Login successful! Redirecting...");
+
+          setTimeout(() => {
+            if (userData.role === "admin") {
+              window.location.href = "dashboard2.html";
+            } else {
+              window.location.href = "dashboard.html";
+            }
+          }, 1500);
+        } else {
+          showError("User data not found.");
+        }
+      } catch (err) {
+        showError(err.message);
+      }
+    });
+  </script>
+</body>
+</html>

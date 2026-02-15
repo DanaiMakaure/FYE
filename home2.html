@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - Chats Track</title>
+<style>
+  /* Red & White Theme - Clean and modern */
+  :root {
+    --primary-red: #b22222;      /* firebrick */
+    --primary-light-red: #dc143c; /* crimson */
+    --primary-dark-red: #8b0000;  /* darkred */
+    --white: #ffffff;
+    --off-white: #f8f9fa;
+    --light-gray: #e9ecef;
+    --medium-gray: #6c757d;
+    --dark-gray: #343a40;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body { 
+    background-color: var(--off-white); 
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--dark-gray); 
+    line-height: 1.6;
+  }
+
+  #adminForum { 
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px 25px; 
+    background-color: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--light-gray);
+  }
+
+  h2 { 
+    color: var(--primary-red); 
+    margin-bottom: 20px;
+    font-weight: 600;
+    border-left: 6px solid var(--primary-red);
+    padding-left: 15px;
+    font-size: 28px;
+  }
+
+  #downloadBtn {
+    padding: 12px 24px;
+    margin-bottom: 30px;
+    border: none;
+    border-radius: 40px;
+    background-color: var(--primary-red);
+    color: var(--white);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 8px rgba(178, 34, 34, 0.3);
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+
+  #downloadBtn:hover { 
+    background-color: var(--primary-dark-red); 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 0, 0, 0.4);
+  }
+
+  #downloadBtn:active {
+    transform: translateY(0);
+  }
+
+  #adminPostsFeed {
+    margin-top: 10px;
+  }
+
+  .admin-post { 
+    background: var(--white); 
+    padding: 20px 20px 10px 20px; 
+    margin-bottom: 20px; 
+    border-radius: 16px; 
+    border: 1px solid var(--light-gray);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    transition: box-shadow 0.2s;
+    position: relative;
+  }
+
+  .admin-post:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .post-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .post-title-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .post-actions {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+  }
+
+  .delete-post-btn {
+    background-color: var(--primary-red);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .delete-post-btn:hover {
+    background-color: var(--primary-dark-red);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(178, 34, 34, 0.3);
+  }
+
+  .delete-post-btn i {
+    font-size: 14px;
+  }
+
+  .admin-post strong {
+    color: var(--primary-red);
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .admin-post > p {
+    margin: 8px 0 4px 0;
+    color: var(--dark-gray);
+  }
+
+  .admin-post img {
+    border-radius: 12px;
+    margin: 10px 0;
+    border: 1px solid var(--light-gray);
+    max-width: 100%;
+  }
+
+  .comments { 
+    margin-left: 0; 
+    margin-top: 15px;
+    background: var(--off-white); 
+    padding: 15px 15px 5px 15px; 
+    border-radius: 12px; 
+    border-left: 3px solid var(--primary-red);
+  }
+
+  .comments h4 {
+    color: var(--primary-red);
+    margin-bottom: 12px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .comments p { 
+    margin: 6px 0; 
+    padding: 5px 0;
+    border-bottom: 1px dashed var(--light-gray);
+    font-size: 0.95rem;
+  }
+
+  .comments p:last-child {
+    border-bottom: none;
+  }
+
+  .comments p strong {
+    color: var(--primary-dark-red);
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--light-gray);
+    margin: 15px 0 5px 0;
+  }
+
+  .fa-map-marker-alt {
+    color: var(--primary-red);
+    margin-right: 4px;
+  }
+
+  /* loading / message styling */
+  #adminPostsFeed p:first-child {
+    background: var(--off-white);
+    padding: 20px;
+    text-align: center;
+    border-radius: 12px;
+    color: var(--medium-gray);
+  }
+
+  /* small tweaks */
+  .admin-post .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--medium-gray);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+  }
+  
+  .post-meta i {
+    color: var(--primary-red);
+  }
+
+  /* Confirmation Modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-content {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 32px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease;
+  }
+
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .modal-content h3 {
+    color: var(--primary-red);
+    margin-bottom: 16px;
+    font-size: 20px;
+  }
+
+  .modal-content p {
+    margin-bottom: 24px;
+    color: var(--dark-gray);
+    line-height: 1.5;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .modal-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-size: 14px;
+  }
+
+  .modal-btn.cancel {
+    background-color: var(--light-gray);
+    color: var(--dark-gray);
+  }
+
+  .modal-btn.cancel:hover {
+    background-color: var(--medium-gray);
+    color: var(--white);
+  }
+
+  .modal-btn.confirm {
+    background-color: var(--primary-red);
+    color: var(--white);
+  }
+
+  .modal-btn.confirm:hover {
+    background-color: var(--primary-dark-red);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(178, 34, 34, 0.3);
+  }
+</style>
+</head>
+<body>
+
+<div id="adminForum">
+  <h2>Admin - Chats Tracker</h2>
+  <button id="downloadBtn">📄 Download Posts as PDF</button>
+  <div id="adminPostsFeed">Loading posts...</div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal-overlay" style="display: none;">
+  <div class="modal-content">
+    <h3>⚠️ Delete Post</h3>
+    <p>Are you sure you want to delete this post? This action cannot be undone and will remove all comments and replies associated with it.</p>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" id="cancelDeleteBtn">Cancel</button>
+      <button class="modal-btn confirm" id="confirmDeleteBtn">Delete Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDVVNN0hHrR90FiEaPoJt8H4MVR8KBkWZw",
+  authDomain: "community-forum-75dc6.firebaseapp.com",
+  databaseURL: "https://community-forum-75dc6-default-rtdb.firebaseio.com",
+  projectId: "community-forum-75dc6",
+  storageBucket: "community-forum-75dc6.appspot.com",
+  messagingSenderId: "524182558257",
+  appId: "1:524182558257:web:3612faacdd8fbcb288a710",
+  measurementId: "G-JGMRZDKTG2"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+const adminPostsFeed = document.getElementById("adminPostsFeed");
+const downloadBtn = document.getElementById("downloadBtn");
+const deleteModal = document.getElementById("deleteModal");
+const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+
+let postsArrayGlobal = []; // Store posts for PDF
+let currentPostToDelete = null; // Store the ID of the post to delete
+
+// Close modal when clicking cancel
+cancelDeleteBtn.addEventListener('click', () => {
+  deleteModal.style.display = 'none';
+  currentPostToDelete = null;
+});
+
+// Confirm delete and remove from Firebase
+confirmDeleteBtn.addEventListener('click', async () => {
+  if (currentPostToDelete) {
+    try {
+      // Remove the post from Firebase
+      await remove(ref(db, `posts/${currentPostToDelete}`));
+      console.log(`Post ${currentPostToDelete} deleted successfully`);
+      
+      // Show success message (optional)
+      alert('Post deleted successfully');
+      
+      // Close modal
+      deleteModal.style.display = 'none';
+      currentPostToDelete = null;
+      
+      // The posts will automatically refresh via the onValue listener
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      alert('Failed to delete post. Please try again.');
+    }
+  }
+});
+
+// Close modal if clicked outside
+window.addEventListener('click', (e) => {
+  if (e.target === deleteModal) {
+    deleteModal.style.display = 'none';
+    currentPostToDelete = null;
+  }
+});
+
+// Wait for admin to be logged in
+onAuthStateChanged(auth, user => {
+    if (!user) {
+        adminPostsFeed.innerHTML = "<p>Please log in as admin to view posts.</p>";
+        return;
+    }
+
+    const userRef = ref(db, `users/${user.uid}/role`);
+    onValue(userRef, roleSnap => {
+        const role = roleSnap.val();
+        if (role !== "admin") {
+            adminPostsFeed.innerHTML = "<p>Access denied. You are not an admin.</p>";
+            return;
+        }
+
+        const postsRef = ref(db, "posts");
+        onValue(postsRef, snapshot => {
+            adminPostsFeed.innerHTML = "";
+            const posts = snapshot.val();
+            if (!posts) {
+                adminPostsFeed.innerHTML = "<p>No posts found.</p>";
+                return;
+            }
+
+            postsArrayGlobal = Object.entries(posts).map(([id, post]) => ({ id, ...post }));
+            postsArrayGlobal.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            postsArrayGlobal.forEach(post => {
+                const postDiv = document.createElement("div");
+                postDiv.classList.add("admin-post");
+                postDiv.dataset.postId = post.id;
+
+                const date = post.timestamp ? new Date(post.timestamp).toLocaleString() : "No date";
+                const authorName = post.anonymous ? "Anonymous" : (post.authorName || "User");
+                const content = post.content || "";
+                const imageUrl = post.imageUrl ? `<img src="${post.imageUrl}" style="max-width:200px;margin-top:5px;border-radius:8px;">` : "";
+                const location = post.location ? `<p class="post-meta"><i class="fas fa-map-marker-alt"></i> ${post.location}</p>` : "";
+
+                let mentionsText = "";
+                if (post.mentions && Object.keys(post.mentions).length > 0) {
+                    const mentionList = Object.values(post.mentions).map(u => u.name).filter(Boolean).join(", ");
+                    if (mentionList) mentionsText = `<p><strong>📌 Mentions:</strong> ${mentionList}</p>`;
+                }
+
+                let commentsText = "<p style='color:var(--medium-gray);'>No comments yet</p>";
+                if (post.comments && Object.keys(post.comments).length > 0) {
+                    commentsText = Object.values(post.comments).map(c => {
+                        const cName = c.authorName || c.userName || c.author || "Anonymous";
+                        const cText = c.text || c.comment || "";
+                        return `<p><strong>💬 ${cName}:</strong> ${cText}</p>`;
+                    }).join("");
+                }
+
+                postDiv.innerHTML = `
+                    <div class="post-header-row">
+                        <div class="post-title-info">
+                            <strong>👤 ${authorName}</strong>
+                            <span style="color:var(--medium-gray); font-size:0.85rem;">🕒 ${date}</span>
+                        </div>
+                        <div class="post-actions">
+                            <button class="delete-post-btn" data-post-id="${post.id}">
+                                <i class="fas fa-trash"></i> Delete Post
+                            </button>
+                        </div>
+                    </div>
+                    <p style="margin:10px 0 8px 0; font-size:1.05rem;">${content}</p>
+                    ${imageUrl}
+                    ${location}
+                    ${mentionsText}
+                    <div class="comments">
+                        <h4>🗨️ Comments</h4>
+                        ${commentsText}
+                    </div>
+                    <hr>
+                `;
+
+                // Add delete button event listener
+                const deleteBtn = postDiv.querySelector('.delete-post-btn');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const postId = e.currentTarget.dataset.postId;
+                    currentPostToDelete = postId;
+                    deleteModal.style.display = 'flex';
+                });
+
+                adminPostsFeed.appendChild(postDiv);
+            });
+        });
+    });
+});
+
+// ----- PDF Download (unchanged functionality) -----
+downloadBtn.addEventListener("click", async () => {
+    if (!postsArrayGlobal.length) return alert("No posts to export.");
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    let yOffset = 10;
+    postsArrayGlobal.forEach((post, idx) => {
+        const date = post.timestamp ? new Date(post.timestamp).toLocaleString() : "No date";
+        const authorName = post.anonymous ? "Anonymous" : (post.authorName || "User");
+        const content = post.content || "";
+        doc.setFontSize(12);
+        doc.text(`${idx+1}. ${authorName} (${date})`, 10, yOffset);
+        yOffset += 6;
+        doc.text(`Content: ${content}`, 10, yOffset);
+        yOffset += 6;
+
+        if (post.location) {
+            doc.text(`Location: ${post.location}`, 10, yOffset);
+            yOffset += 6;
+        }
+
+        if (post.mentions && Object.keys(post.mentions).length > 0) {
+            const mentionList = Object.values(post.mentions).map(u => u.name).filter(Boolean).join(", ");
+            if (mentionList) {
+                doc.text(`Mentions: ${mentionList}`, 10, yOffset);
+                yOffset += 6;
+            }
+        }
+
+        if (post.comments && Object.keys(post.comments).length > 0) {
+            doc.text(`Comments:`, 10, yOffset);
+            yOffset += 6;
+            Object.values(post.comments).forEach(c => {
+                const cName = c.authorName || c.userName || c.author || "Anonymous";
+                const cText = c.text || c.comment || "";
+                doc.text(`- ${cName}: ${cText}`, 12, yOffset);
+                yOffset += 6;
+            });
+        }
+
+        yOffset += 4;
+        if (yOffset > 280) { doc.addPage(); yOffset = 10; }
+    });
+
+    doc.save("community_posts.pdf");
+});
+</script>
+
+<!-- Font Awesome for icons (optional but used for better look) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</body>
+</html>
