@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin – MOROKA FYE Moemish Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* RED & WHITE theme – fresh, clean, modern */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-red: #b22222;      /* firebrick */
+      --primary-light-red: #dc143c; /* crimson */
+      --primary-dark-red: #8b0000;  /* darkred */
+      --white: #ffffff;
+      --off-white: #fef5f5;         /* subtle red tint */
+      --light-gray: #f1f3f5;
+      --medium-gray: #6c757d;
+      --dark-gray: #2d2d2d;
+      --border-light: #e9ecef;
+      --shadow-sm: 0 4px 12px rgba(0,0,0,0.03);
+      --shadow-md: 0 8px 20px rgba(178,34,34,0.08);
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+      background: var(--off-white);
+      color: var(--dark-gray);
+      margin: 0;
+      padding: 2rem 1.5rem;
+      min-height: 100vh;
+    }
+
+    /* dashboard panel */
+    #dashboard {
+      max-width: 1400px;
+      margin: 1rem auto;
+      display: block;
+    }
+
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .dashboard-header h1 {
+      color: var(--primary-red);
+      font-weight: 800;
+      font-size: 2.2rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--primary-red), var(--primary-light-red));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .stats-badge {
+      background: var(--white);
+      border-radius: 40px;
+      padding: 0.6rem 1.5rem;
+      border: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-weight: 600;
+      color: var(--primary-red);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stats-badge i {
+      font-size: 1.2rem;
+    }
+
+    /* error message styling */
+    .error-message {
+      background: #ffe6e6;
+      color: var(--primary-red);
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      text-align: center;
+      border: 1px solid var(--primary-red);
+      display: none;
+    }
+
+    .error-message i {
+      margin-right: 0.5rem;
+    }
+
+    /* table – modern card style */
+    .table-wrapper {
+      background: var(--white);
+      border-radius: 32px;
+      padding: 1.8rem 1.2rem;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(178,34,34,0.1);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 1rem 0.8rem 0.8rem 0.8rem;
+      font-weight: 700;
+      color: var(--primary-red);
+      border-bottom: 2px solid var(--primary-light-red);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.85rem;
+    }
+
+    td {
+      padding: 1rem 0.8rem;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--dark-gray);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #fff9f9;
+    }
+
+    /* status badge */
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #fff0f0;
+      color: var(--primary-dark-red);
+      border: 1px solid rgba(178,34,34,0.2);
+    }
+
+    /* empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--medium-gray);
+      font-style: italic;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: #ddd;
+      margin-bottom: 1rem;
+    }
+
+    /* small responsive */
+    @media (max-width: 700px) {
+      th, td { padding: 0.8rem 0.4rem; }
+      .dashboard-header h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="dashboard-header">
+    <h1><i class="fas fa-laugh-squint"></i> moemish central</h1>
+    <div class="stats-badge">
+      <i class="fas fa-sync-alt fa-spin" style="color:var(--primary-red);"></i>
+      <span id="liveCount">connecting...</span>
+    </div>
+  </div>
+
+  <!-- Error display -->
+  <div id="errorMessage" class="error-message">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span id="errorText"></span>
+  </div>
+
+  <div class="table-wrapper">
+    <table id="issuesTable">
+      <thead>
+        <tr>
+          <th><i class="far fa-clock"></i> time</th>
+          <th><i class="fas fa-tag"></i> category</th>
+          <th><i class="fas fa-headline"></i> moemish</th>
+          <th><i class="fas fa-flag"></i> status</th>
+        </tr>
+      </thead>
+      <tbody id="issuesBody">
+        <tr><td colspan="4" class="empty-state">
+          <i class="fas fa-spinner fa-pulse"></i><br>loading moemish …
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Firebase SDK with Anonymous Auth -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+// Firebase config (YOUR EXACT CONFIG)
+const firebaseConfig = {
+  apiKey: "AIzaSyDVVNN0hHrR90FiEaPoJt8H4MVR8KBkWZw",
+  authDomain: "community-forum-75dc6.firebaseapp.com",
+  databaseURL: "https://community-forum-75dc6-default-rtdb.firebaseio.com",
+  projectId: "community-forum-75dc6",
+  storageBucket: "community-forum-75dc6.appspot.com",
+  messagingSenderId: "524182558257",
+  appId: "1:524182558257:web:3612faacdd8fbcb288a710"
+};
+
+// Initialize
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+const body = document.getElementById("issuesBody");
+const liveCountSpan = document.getElementById("liveCount");
+const errorMsg = document.getElementById("errorMessage");
+const errorText = document.getElementById("errorText");
+
+function showError(msg) {
+  console.error("Error:", msg);
+  errorText.textContent = msg;
+  errorMsg.style.display = "block";
+  liveCountSpan.textContent = "error";
+}
+
+function hideError() {
+  errorMsg.style.display = "none";
+}
+
+// Sign in anonymously first (bypasses permission issues)
+signInAnonymously(auth)
+  .then(() => {
+    console.log("Signed in anonymously - fetching data...");
+    fetchIssues();
+  })
+  .catch((error) => {
+    console.error("Auth error:", error);
+    showError("Authentication failed: " + error.message);
+    // Try to fetch anyway (in case rules allow public read)
+    fetchIssues();
+  });
+
+function fetchIssues() {
+  const issuesRef = ref(db, "issues");
+
+  onValue(issuesRef, 
+    (snap) => {
+      hideError();
+      const val = snap.val();
+      console.log("Data received:", val);
+      
+      if (!val) {
+        body.innerHTML = `<tr><td colspan="4" class="empty-state"><i class="far fa-smile-wink"></i><br>no moemish yet – be the first to share!</td></tr>`;
+        liveCountSpan.textContent = "0 stories";
+        return;
+      }
+
+      const rows = Object.entries(val).map(([key, value]) => ({ id: key, ...value }));
+      rows.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      liveCountSpan.textContent = rows.length + ' ' + (rows.length === 1 ? 'story' : 'stories');
+
+      body.innerHTML = "";
+      
+      rows.forEach(r => {
+        const tr = document.createElement("tr");
+        
+        // timestamp
+        let timeStr = "—";
+        if (r.createdAt) {
+          try {
+            const d = new Date(r.createdAt);
+            timeStr = d.toLocaleString('en-ZA', { 
+              day:'2-digit', 
+              month:'short', 
+              hour:'2-digit', 
+              minute:'2-digit' 
+            });
+          } catch { 
+            timeStr = "recent"; 
+          }
+        }
+        
+        // status
+        const status = r.status || 'new';
+        
+        tr.innerHTML = `
+          <td><span style="font-weight:500;">${timeStr}</span></td>
+          <td><span>${r.category || '✨ moemish'}</span></td>
+          <td>
+            <strong style="color:var(--dark-gray);">${r.title || 'untitled moemish'}</strong>
+            <div style="font-size:0.8rem; color:var(--medium-gray); margin-top:4px;">${(r.details||'').substring(0,60)}${(r.details||'').length>60?'…':''}</div>
+          </td>
+          <td><span class="status-badge">${status}</span></td>
+        `;
+        body.appendChild(tr);
+      });
+    },
+    (error) => {
+      console.error("Database error:", error);
+      showError("Failed to load data: " + error.message);
+      body.innerHTML = `<tr><td colspan="4" class="empty-state"><i class="fas fa-exclamation-triangle"></i><br>Error loading data</td></tr>`;
+    }
+  );
+}
+</script>
+</body>
+</html>
